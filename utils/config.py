@@ -9,8 +9,8 @@ load_dotenv()
 @dataclass
 class Config:
     TOKEN = getenv("BOT_TOKEN")
-    DB_HOST = getenv("DB_HOST")
-    DB_PORT = getenv("DB_PORT")
-    DB_USER = getenv("DB_USER")
-    DB_PASS = getenv("DB_PASS")
-    DB_NAME = getenv("DB_NAME")
+    DB_HOST = getenv("POSTGRES_HOST")
+    DB_PORT = getenv("POSTGRES_PORT")
+    DB_USER = getenv("POSTGRES_USER")
+    DB_PASS = getenv("POSTGRES_PASSWORD")
+    DB_NAME = getenv("POSTGRES_NAME")

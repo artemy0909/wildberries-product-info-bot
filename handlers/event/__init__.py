@@ -11,7 +11,7 @@ class Scheduler:
         self.bot = bot
 
     def add_subscribe_alert(self, user_id, article):
-        self.add_task(article_alert, minutes=1, id_=f"{user_id}:{article}", user_id=user_id, article=article)
+        self.add_task(article_alert, minutes=5, id_=f"{user_id}:{article}", user_id=user_id, article=article)
 
     def remove_subscribe_alert(self, user_id, article):
         id_ = f"{user_id}:{article}"
