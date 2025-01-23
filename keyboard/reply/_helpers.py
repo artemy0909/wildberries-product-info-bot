@@ -3,12 +3,10 @@ from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 
 def reply_keyboard(func):
     def wrapper(*args, **kwargs) -> ReplyKeyboardMarkup:
-
         def error():
-            raise TypeError(f"Expected str | list[str] | tuple[str]")
+            raise TypeError("Expected str | list[str] | tuple[str]")
 
-        res: list[str] = func(*args, **kwargs)
-
+        res = func(*args, **kwargs)
         if isinstance(res, str):
             return ReplyKeyboardMarkup(
                 keyboard=[[KeyboardButton(text=res)]],

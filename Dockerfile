@@ -1,9 +1,11 @@
-FROM python:3.10.11
+FROM python:3.12.7
+
 WORKDIR /app
+
 COPY requirements.txt requirements.txt
-RUN pip install --upgrade setuptools
+RUN pip install --upgrade pip setuptools
 RUN pip install -r requirements.txt
-RUN chmod 755 .
+
 COPY . .
 
-CMD [ "python", "./main.py"]
+CMD ["uvicorn", "main:main_app", "--host", "127.0.0.1", "--port", "8000"]

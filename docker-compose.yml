@@ -1,4 +1,5 @@
-version: '3.7'
+version: '3.9'
+
 services:
   db:
     container_name: db
@@ -10,15 +11,17 @@ services:
     restart: on-failure
     ports:
       - "5432:5432"
-  bot:
-    container_name: bot
+
+  bot_and_api:
+    container_name: bot_and_api
     build: .
     env_file:
       - ./.env
     restart: always
     depends_on:
       - db
-
+    ports:
+      - "8000:8000"
 
 volumes:
   pgdata:

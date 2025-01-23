@@ -4,7 +4,11 @@ from ._helpers import reply_keyboard
 
 @reply_keyboard
 def menu():
-    return MenuButtons.get_product_info, MenuButtons.stop_notifications, MenuButtons.get_database_info
+    return (
+        MenuButtons.get_product_info,
+        MenuButtons.stop_notifications,
+        MenuButtons.get_database_info
+    )
 
 
 @reply_keyboard

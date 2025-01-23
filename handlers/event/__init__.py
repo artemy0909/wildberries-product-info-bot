@@ -1,41 +1,64 @@
-import asyncio
+import logging
 
-import aioschedule
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.interval import IntervalTrigger
+
 from .subscription_alert import article_alert
+from utils.wildberries import fetch_product_info
+from utils.database import add_product_data
 
 
 class Scheduler:
-
     def __init__(self, bot):
-        self.tasks = {}
         self.bot = bot
+        self.scheduler = AsyncIOScheduler(timezone="UTC")
 
-    def add_subscribe_alert(self, user_id, article):
-        self.add_task(article_alert, minutes=5, id_=f"{user_id}:{article}", user_id=user_id, article=article)
+    def start(self):
+        self.scheduler.start()
+        logging.info("APScheduler started.")
+
+    def shutdown(self, wait=True):
+        self.scheduler.shutdown(wait=wait)
+        logging.info("APScheduler shutdown.")
+
+    def add_subscribe_alert(self, user_id, article, interval_minutes: int):
+        job_id = f"{user_id}:{article}"
+        if self.scheduler.get_job(job_id):
+            return
+        self.scheduler.add_job(
+            article_alert,
+            trigger=IntervalTrigger(minutes=interval_minutes),
+            args=[self.bot, user_id, article],
+            id=job_id,
+            replace_existing=True
+        )
 
     def remove_subscribe_alert(self, user_id, article):
-        id_ = f"{user_id}:{article}"
-        self.remove_task(id_)
+        job_id = f"{user_id}:{article}"
+        job = self.scheduler.get_job(job_id)
+        if job:
+            job.remove()
 
     def remove_all_user_alerts(self, user_id):
-        on_delete = []
-        for task in self.tasks:
-            if task.startswith(f"{user_id}"):
-                on_delete.append(task)
-        for task in on_delete:
-            self.remove_task(task)
+        for job in self.scheduler.get_jobs():
+            if job.id.startswith(f"{user_id}:"):
+                job.remove()
 
-    def add_task(self, job, minutes, id_, **kwargs):
-        schedule: aioschedule.Job = aioschedule.every(minutes).minutes.do(job, self.bot, **kwargs)
-        self.tasks[id_] = schedule
+    def add_api_subscribe_alert(self, article: str, interval_minutes: int):
+        async def api_job():
+            product_info = await fetch_product_info(article)
+            if product_info:
+                await add_product_data(product_info)
 
-    def remove_task(self, id_):
-        if id_ in self.tasks:
-            aioschedule.cancel_job(self.tasks[id_])
-            del self.tasks[id_]
+        job_id = f"api:{article}"
+        if self.scheduler.get_job(job_id):
+            return
+        self.scheduler.add_job(
+            api_job,
+            trigger=IntervalTrigger(minutes=interval_minutes),
+            id=job_id,
+            replace_existing=True
+        )
 
-    @staticmethod
-    async def start():
-        while True:
-            await aioschedule.run_pending()
-            await asyncio.sleep(1)
+    def get_job(self, job_id: str):
+        return self.scheduler.get_job(job_id)

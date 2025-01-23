@@ -5,6 +5,10 @@ from aiogram.enums import ParseMode
 from handlers.event import Scheduler
 from utils.config import Config
 
-bot = Bot(Config.TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+bot = Bot(
+    token=Config.TOKEN,
+    default=DefaultBotProperties(parse_mode=ParseMode.HTML)
+)
+
 dp = Dispatcher()
 scheduler = Scheduler(bot)

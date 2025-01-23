@@ -1,3 +1,6 @@
+from utils.config import Config
+
+
 class MenuButtons:
     get_product_info = "🔍 Получить информацию по товару"
     stop_notifications = "🔕 Остановить все уведомления"
@@ -6,5 +9,5 @@ class MenuButtons:
 
 
 class SubInlineButtons:
-    subscribe = "📝 Подписаться"
+    subscribe = f"📝 Подписаться (раз в {Config.SUBSCRIBE_PUSH_INTERVAL} минут)"
     unsubscribe = "🔕 Отписаться"

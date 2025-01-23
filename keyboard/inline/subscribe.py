@@ -5,14 +5,18 @@ from ..buttons import SubInlineButtons
 
 
 def subscribe(article: str):
-    return InlineKeyboardBuilder().button(
+    builder = InlineKeyboardBuilder()
+    builder.button(
         text=SubInlineButtons.subscribe,
-        callback_data=SubscriptionCallback(article=article).pack(),
-    ).as_markup()
+        callback_data=SubscriptionCallback(article=article)
+    )
+    return builder.as_markup()
 
 
 def unsubscribe(article: str):
-    return InlineKeyboardBuilder().button(
+    builder = InlineKeyboardBuilder()
+    builder.button(
         text=SubInlineButtons.unsubscribe,
-        callback_data=UnsubscriptionCallback(article=article).pack(),
-    ).as_markup()
+        callback_data=UnsubscriptionCallback(article=article)
+    )
+    return builder.as_markup()

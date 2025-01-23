@@ -1,2 +1,32 @@
-# wildberries-product-info-bot
- Finds information about products from Wildberries
+# Wildberries Info Bot
+> Предоставляет актуальную информацию о товарах WB
+
+Проект включает в себя:
+
+- **FastAPI**: HTTP API, в том числе Swagger‑доки
+- **Aiogram (v3)**: Телеграм-бот
+- **APScheduler**: Периодические задачи (в памяти + сохранение подписок в БД)
+- **PostgreSQL**: Хранение данных товаров
+
+## Запуск
+
+1. Клонируйте репозиторий или поместите файлы проекта в любую директорию.
+2. Переименуйте/скопируйте файл .env-sample в .env и подставьте **реальные** значения:
+    - BOT_TOKEN: токен вашего бота (от BotFather).
+    - POSTGRES_*: настройки доступа к PostgreSQL.
+    - API_BEARER_TOKEN: токен для Bearer-авторизации FastAPI.
+3. Соберите и запустите контейнеры:
+   ```
+   bash
+   docker-compose build
+   docker-compose up -d
+   ```
+
+## Использование API
+
+- **POST** /api/v1/products  
+  Тело: {"article": "211695539"}  
+  Запрашивает данные о товаре (по статье/артикулу) на Wildberries и сохраняет в БД.
+
+- **GET** /api/v1/subscribe/{article}  
+  Запускает периодический сбор данных (каждые 30 минут) и тоже сохраняет в БД.
