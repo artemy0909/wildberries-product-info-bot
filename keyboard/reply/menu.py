@@ -1,5 +1,5 @@
-from ..buttons import MenuButtons
 from ._helpers import reply_keyboard
+from ..buttons import MenuButtons
 
 
 @reply_keyboard

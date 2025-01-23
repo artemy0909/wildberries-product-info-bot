@@ -1,18 +1,18 @@
+import asyncio
 import logging
 import sys
-import asyncio
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
-from fastapi.responses import RedirectResponse
-from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 
-from loader import dp, bot, scheduler
-from handlers import ROUTERS
 from api import router as api_router
-from utils.scheduler import init_schedulers_from_db
+from handlers import ROUTERS
+from loader import dp, bot, scheduler
 from utils.database.db import init_db
+from utils.scheduler import init_schedulers_from_db
 
 
 @asynccontextmanager
@@ -61,4 +61,4 @@ async def docs_redirect(request: Request):
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, stream=sys.stdout)
-    uvicorn.run("main:main_app", host="127.0.0.1", port=8000, reload=False)
+    uvicorn.run("main:main_app", host="0.0.0.0", port=80, reload=False)

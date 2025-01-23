@@ -9,5 +9,5 @@ class MenuButtons:
 
 
 class SubInlineButtons:
-    subscribe = f"📝 Подписаться (раз в {Config.SUBSCRIBE_PUSH_INTERVAL} минут)"
+    subscribe = f"📝 Подписаться (раз в {Config.SUBSCRIBE_PUSH_INTERVAL} мин.)"
     unsubscribe = "🔕 Отписаться"

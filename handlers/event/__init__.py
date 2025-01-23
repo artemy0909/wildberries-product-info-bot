@@ -3,9 +3,9 @@ import logging
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 
-from .subscription_alert import article_alert
-from utils.wildberries import fetch_product_info
 from utils.database import add_product_data
+from utils.wildberries import fetch_product_info
+from .subscription_alert import article_alert
 
 
 class Scheduler:

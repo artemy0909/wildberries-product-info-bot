@@ -4,13 +4,7 @@ from aiogram.types import Message
 
 import keyboard
 import text
-from utils.database import (
-    add_user_query,
-    get_last_user_query_records,
-    unsubscribe_all,
-    get_product_fresh_record,
-    is_subscription_exists
-)
+from utils import database
 from utils.states import MenuCommands
 
 menu_router = Router()
@@ -29,7 +23,7 @@ async def get_product_info_handler(message: Message, state: FSMContext) -> None:
 async def stop_notifications_handler(message: Message) -> None:
     from loader import scheduler
     scheduler.remove_all_user_alerts(message.from_user.id)
-    await unsubscribe_all(message.from_user.id)
+    await database.unsubscribe_all(message.from_user.id)
     await message.answer(
         text.ALL_NOTIFICATIONS_IS_STOPPED,
         reply_markup=keyboard.reply.menu()
@@ -38,7 +32,7 @@ async def stop_notifications_handler(message: Message) -> None:
 
 @menu_router.message(F.text == keyboard.MenuButtons.get_database_info)
 async def get_database_info_handler(message: Message) -> None:
-    last_queries = await get_last_user_query_records(message.from_user.id, quantity=5)
+    last_queries = await database.get_last_user_query_records(message.from_user.id, quantity=5)
     if not last_queries:
         await message.answer(
             "Записей в БД пока нет",
@@ -63,8 +57,8 @@ async def back_to_menu_handler(message: Message, state: FSMContext) -> None:
 @menu_router.message(MenuCommands.article, F.text.regexp(r"^\d+$"))
 async def article_handler(message: Message, state: FSMContext) -> None:
     article = message.text
-    await add_user_query(message.from_user.id, article)
-    product = await get_product_fresh_record(article)
+    await database.add_user_query(message.from_user.id, article)
+    product = await database.get_product_fresh_record(article)
     if product:
         response_text = text.product_info_to_description(
             product.article,
@@ -73,7 +67,7 @@ async def article_handler(message: Message, state: FSMContext) -> None:
             product.rating,
             product.quantity
         )
-        subscribed = await is_subscription_exists(message.from_user.id, product.article)
+        subscribed = await database.is_subscription_exists(message.from_user.id, product.article)
         if subscribed:
             reply_markup = keyboard.inline.unsubscribe(product.article)
         else:

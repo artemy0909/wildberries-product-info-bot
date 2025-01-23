@@ -1,19 +1,9 @@
 import json
+
 import requests
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
 
-from utils.database import add_product_data
-
-
-@dataclass
-class ProductInfo:
-    article: str
-    title: str
-    rating: float
-    price: int
-    quantity: int
-    fetched_at: datetime = field(default_factory=datetime.utcnow)
+from utils import database
+from utils.entites import ProductInfo
 
 
 def __get_product_info(article: str) -> ProductInfo | None:
@@ -43,17 +33,18 @@ async def fetch_product_info(article: str) -> ProductInfo | None:
     return __get_product_info(article)
 
 
-async def fetch_schedule(article: str, interval_minutes: int) -> bool:
+async def fetch_schedule(article: str, interval_minutes: int) -> ProductInfo | None:
     from loader import scheduler
     job_id = f"api:{article}"
     if scheduler.get_job(job_id):
-        return True
+        product_data_db = await database.get_product_fresh_record(article)
+        return ProductInfo(**product_data_db.__dict__)
 
     product_data = await fetch_product_info(article)
     if product_data:
-        await add_product_data(product_data)
+        scheduler.add_api_subscribe_alert(article, interval_minutes)
+        await database.schedule_update(article)
+        await database.add_product_data(product_data)
+        return product_data
     else:
-        return False
-
-    scheduler.add_api_subscribe_alert(article, interval_minutes)
-    return True
+        return None

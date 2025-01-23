@@ -3,7 +3,6 @@ from utils.database import get_all_subscriptions, get_all_update_schedules
 
 
 async def init_schedulers_from_db(scheduler):
-
     for sub in await get_all_subscriptions():
         scheduler.add_subscribe_alert(sub.telegram_id, sub.article, Config.SUBSCRIBE_PUSH_INTERVAL)
 
